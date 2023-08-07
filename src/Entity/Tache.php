@@ -36,9 +36,6 @@ class Tache
     private ?string $description = null;
 
     // Getters and setters for each property...
-}
-
-
     public function getId(): ?int
     {
         return $this->id;

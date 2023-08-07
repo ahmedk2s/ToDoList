@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Taches{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+    {% if not taches.items is same as ([]) %}
+        <h1>Mes Taches</h1>
+
+            <h4 class="count">
+                Tl y a {{ taches.getTotalItemCount }} taches au total
+            </h4>
+
+        <table class="table table-hover my-1">
+            <thead>
+                <tr>
+                    <th scope="col">Numero</th>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Date d'echéance</th>
+                    <th scope="col">Priorité</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tache in taches %}
+                <tr class="table-primary">
+                    <th scope="row">{{ tache.id }}</th>
+                    <td>{{ tache.titre }}</td>
+                    <td>{{ tache.description }}</td>
+                    <td>{{ tache.dateEcheance|date('Y-m-d') }}</td>
+                    <td>{{ tache.priorite }}</td>
+                    <td>{{ tache.statut }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="navigation d-flex justify-content-center mt-3">
+    {{ knp_pagination_render(taches) }}
+</div>
+{% else %}
+<h4>Il n'a pas de taches</h4>
+{% endif %}
+    </div>
+{% endblock %}
+
+        
