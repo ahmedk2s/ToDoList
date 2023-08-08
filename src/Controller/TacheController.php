@@ -35,6 +35,14 @@ class TacheController extends AbstractController
             'taches' => $tache
         ]);
     }
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route('/tache/nouvelle', name: 'tache.index', methods: ['GET', 'POST'])]
 
     public function new(
@@ -64,6 +72,46 @@ class TacheController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+    #[Route('/tache/edition/{id}', 'tache.edit', methods: ['GET', 'POST'])]
+    public function edit(TacheRepository $repository, int $id, Request $request, EntityManagerInterface $manager) : Response 
+    {
+        $tache = $repository->findOneBy(["id" => $id]);
+        $form = $this->createForm(TacheType::class, $tache);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()){
+            $tache = $form->getData();
+
+            $manager->persist($tache);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre tache a été modifié avec succès !'
+            );
+
+            return $this->redirectToRoute('app_tache');
+        }
+        return $this->render('pages/tache/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/tache/suppression/{id}', 'tache.delete', methods: ['GET'])]
+public function delete(TacheRepository $repository, EntityManagerInterface $manager, int $id) : Response 
+{
+    $tache = $repository->findOneBy(["id" => $id]);
+    $manager->remove($tache);
+    $manager->flush();
+
+    $this->addFlash(
+        'success',
+        'Votre tache a été supprimé avec succès !'
+    );
+
+    return $this->redirectToRoute('app_tache');
+}
+
     
 }
 

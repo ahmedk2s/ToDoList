@@ -7,6 +7,8 @@
     {% if not taches.items is same as ([]) %}
         <h1>Mes Taches</h1>
 
+        <a href="{{ path('tache.index')}}" class="btn btn-primary">Créer une tâche</a>
+
             {# read and display just one flash message type #}
         {% for message in app.flashes('success') %}
             <div class="alert alert-success mt-3">
@@ -14,7 +16,7 @@
             </div>
         {% endfor %}
 
-            <h4 class="count">
+            <h4 class="count mt-3">
                 Tl y a {{ taches.getTotalItemCount }} taches au total
             </h4>
 
@@ -27,6 +29,8 @@
                     <th scope="col">Date d'echéance</th>
                     <th scope="col">Priorité</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Edition</th>
+                    <th scope="col">Suppression</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,12 +42,35 @@
                     <td>{{ tache.dateEcheance|date('Y-m-d') }}</td>
                     <td>{{ tache.priorite }}</td>
                     <td>{{ tache.statut }}</td>
+                    <td>
+                    <a href="{{ path('tache.edit',{ id: tache.id }) }}" class="btn btn-info">Modifier</a>
+                    </td>
+                    <td>
+                    
+                    <a href="{{ path('tache.delete', { id: tache.id }) }}" class="delete-link btn btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer cette tâche ?">Supprimer</a>
+
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <div class="navigation d-flex justify-content-center mt-3">
     {{ knp_pagination_render(taches) }}
+        <script>
+            const deleteLinks = document.querySelectorAll('.delete-link');
+            
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const confirmationMessage = link.getAttribute('data-confirm');
+                    
+                    if (confirm(confirmationMessage)) {
+                        window.location.href = link.getAttribute('href');
+                    }
+                });
+            });
+        </script>
+
 </div>
 {% else %}
 <h4>Il n'a pas de taches</h4>
