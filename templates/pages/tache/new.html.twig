@@ -1,0 +1,38 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<div class="container">
+
+    <h1 class="mt-4">Création d'une tâche</h1>
+    
+ {{ form_start(form) }}
+    <div class="form-error">
+        {{ form_errors(form) }}
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.titre) }}
+        </div>
+        <div class="col" id="some-custom-id">
+            {{ form_row(form.date_echeance) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.priorite) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.statut) }}
+        </div>
+    </div>
+
+    {{ form_row(form.description) }}
+
+    {{ form_row(form.submit) }}
+
+{{ form_end(form) }}
+
+</div>
+{% endblock %}

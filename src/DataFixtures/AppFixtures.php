@@ -20,6 +20,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $now = new \DateTime(); // Date et heure actuelles
+        $priorites = ['basse', 'moyenne', 'haute'];
         $statuts = ['En cours', 'Terminé', 'En attente'];
         $descriptions = [
             'Préparez une délicieuse tarte aux fruits en mélangeant des fraises juteuses, des framboises sucrées et des bleuets dans un fond de tarte croustillant, le tout garni d\'une délicieuse crème pâtissière légère.',
@@ -42,7 +43,7 @@ class AppFixtures extends Fixture
             $tache = new Tache();
             $tache->setTitre($this->faker->word())
                 ->setDateEcheance(clone $now->modify('+ ' . mt_rand(1, 14) . ' days')) // Date aléatoire entre 1 et 14 jours à partir de maintenant
-                ->setPriorite(mt_rand(0, 3))
+                ->setPriorite($priorites[array_rand($priorites)]) 
                 ->setStatut($statuts[array_rand($statuts)]) // Choisit un statut aléatoire
                 ->setDescription($descriptions[array_rand($descriptions)]); // Choisit une description aléatoire
 

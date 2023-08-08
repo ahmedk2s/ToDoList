@@ -7,6 +7,13 @@
     {% if not taches.items is same as ([]) %}
         <h1>Mes Taches</h1>
 
+            {# read and display just one flash message type #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success mt-3">
+                {{ message }}
+            </div>
+        {% endfor %}
+
             <h4 class="count">
                 Tl y a {{ taches.getTotalItemCount }} taches au total
             </h4>
