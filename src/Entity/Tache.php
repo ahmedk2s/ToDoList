@@ -35,6 +35,10 @@ class Tache
     #[Assert\NotNull()]
     private ?string $description = null;
 
+    #[ORM\ManyToOne(inversedBy: 'taches')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     // Getters and setters for each property...
     public function getId(): ?int
     {
@@ -97,6 +101,18 @@ class Tache
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

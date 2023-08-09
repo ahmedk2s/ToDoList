@@ -43,19 +43,9 @@ class AppFixtures extends Fixture
             'Collaborez avec l\'équipe de conception pour finaliser le design de l\'application.',
         ];
 
-        for ($i = 1; $i <= 30; $i++) {
-            $tache = new Tache();
-            $tache->setTitre($this->faker->word())
-                ->setDateEcheance(clone $now->modify('+ ' . mt_rand(1, 14) . ' days')) // Date aléatoire entre 1 et 14 jours à partir de maintenant
-                ->setPriorite($priorites[array_rand($priorites)]) 
-                ->setStatut($statuts[array_rand($statuts)]) // Choisit un statut aléatoire
-                ->setDescription($descriptions[array_rand($descriptions)]); // Choisit une description aléatoire
-
-            $manager->persist($tache);
-        }
-
-        // Users
-        for ($i = 0; $i < 10; $i++) {
+         // Users
+         $users = [];
+         for ($i = 0; $i < 10; $i++) {
             $user = new User();
             $user->setFullName($this->faker->name())
                 ->setPseudo(mt_rand(0, 1) === 1 ? $this->faker->firstName() : null)
@@ -63,8 +53,32 @@ class AppFixtures extends Fixture
                 ->setRoles(['ROLE_USER'])
                 ->setPlainPassword('password');
 
+                $users[] = $user;
                 $manager->persist(($user));
         }
+
+        $usersCount = count($users);
+        // taches
+        $taches = [];
+        for ($i = 1; $i <= 30; $i++) {
+            $tache = new Tache();
+            $tache->setTitre($this->faker->word())
+                ->setDateEcheance(clone $now->modify('+ ' . mt_rand(1, 14) . ' days')) // Date aléatoire entre 1 et 14 jours à partir de maintenant
+                ->setPriorite($priorites[array_rand($priorites)]) 
+                ->setStatut($statuts[array_rand($statuts)]) // Choisit un statut aléatoire
+                ->setDescription($descriptions[array_rand($descriptions)]); // Choisit une description aléatoire
+               
+                if ($usersCount > 0) {
+                    $randomUserIndex = mt_rand(0, $usersCount - 1);
+                    $tache->setUser($users[$randomUserIndex]);
+
+                }
+
+            $taches[] = $tache;
+            $manager->persist($tache);
+        }
+
+       
 
         $manager->flush();
     }

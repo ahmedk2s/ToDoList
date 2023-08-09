@@ -27,7 +27,7 @@ class TacheController extends AbstractController
     public function index(TacheRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
         $tache = $paginator->paginate(
-            $repository->findAll(),
+            $repository->findBy(['user' => $this->getUser()]),
             $request->query->getInt('page', 1),
             7 
         );
@@ -56,7 +56,7 @@ class TacheController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()){
             $tache = $form->getData();
-
+            $tache->setUser($this->getUser());
             $manager->persist($tache);
             $manager->flush();
 
