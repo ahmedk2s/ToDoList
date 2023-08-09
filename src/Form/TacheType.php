@@ -100,7 +100,7 @@ class TacheType extends AbstractType
                 ]
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Créer Tâche',
+                'label' => 'Modifier Tâche',
                 'attr' => [
                     'class' => 'btn btn-primary mt-4' // Classe CSS pour le style du bouton
                 ]

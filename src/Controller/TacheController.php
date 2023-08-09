@@ -12,6 +12,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Entity;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class TacheController extends AbstractController
 {
@@ -26,6 +28,10 @@ class TacheController extends AbstractController
     #[Route('/tache', name: 'app_tache', methods: ['GET'])]
     public function index(TacheRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
+        // Vérification de l'autorisation manuellement
+        if (!$this->isGranted('ROLE_USER')) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
         $tache = $paginator->paginate(
             $repository->findBy(['user' => $this->getUser()]),
             $request->query->getInt('page', 1),
@@ -50,6 +56,10 @@ class TacheController extends AbstractController
         EntityManagerInterface $manager
     ) : Response
     {
+        // Vérification de l'autorisation manuellement
+        if (!$this->isGranted('ROLE_USER')) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
         $tache = new tache();
         $form = $this->createForm(TacheType::class, $tache);
 
@@ -72,28 +82,31 @@ class TacheController extends AbstractController
             'form' => $form->createView()
         ]);
     }
-    #[Route('/tache/edition/{id}', 'tache.edit', methods: ['GET', 'POST'])]
-    public function edit(TacheRepository $repository, int $id, Request $request, EntityManagerInterface $manager) : Response 
+
+
+    #[Route('/tache/edition/{id}', name: 'tache.edit', methods: ['GET', 'POST'])]
+    public function edit(TacheRepository $repository, int $id, Request $request, EntityManagerInterface $manager): Response
     {
-        $tache = $repository->findOneBy(["id" => $id]);
+        $tache = $repository->findOneBy(['id' => $id]);
+
+        // Vérification de l'autorisation manuellement
+        if (!$this->isGranted('ROLE_USER') || $this->getUser() !== $tache->getUser()) {
+            throw new AccessDeniedException('Vous n\'êtes pas autorisé à modifier cette tâche.');
+        }
+
         $form = $this->createForm(TacheType::class, $tache);
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()){
-            $tache = $form->getData();
-
-            $manager->persist($tache);
+        if ($form->isSubmitted() && $form->isValid()) {
             $manager->flush();
 
-            $this->addFlash(
-                'success',
-                'Votre tache a été modifié avec succès !'
-            );
+            $this->addFlash('success', 'Votre tache a été modifiée avec succès !');
 
             return $this->redirectToRoute('app_tache');
         }
+
         return $this->render('pages/tache/edit.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
