@@ -4,10 +4,14 @@
 
 {% block body %}
     <div class="container mt-5">
-    {% if not taches.items is same as ([]) %}
-        <h1>Mes Taches</h1>
+    
+        
+        <a href="{{ path('tache.index')}}" class="btn btn-primary mb-3">Créer une tâche</a>
 
-        <a href="{{ path('tache.index')}}" class="btn btn-primary">Créer une tâche</a>
+
+    {% if not taches.items is same as ([]) %}
+
+        <h1>Mes Taches</h1>
 
             {# read and display just one flash message type #}
         {% for message in app.flashes('success') %}

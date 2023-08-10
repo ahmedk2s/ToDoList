@@ -23,6 +23,36 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager,): void
     {
+            // Users
+         $users = [];
+
+        $admin = new User();
+        $admin->setFullName('Administrateur de ToDoList')
+            ->setPseudo(null)
+            ->setEmail('admin@todolist.fr')
+            ->setRoles(['ROLE_USER', 'ROLE_ADMIN'])
+            ->setPlainPassword('password');
+
+            $users[] = $admin;
+            $manager->persist($admin);
+
+         for ($i = 0; $i < 10; $i++) {
+            $user = new User();
+            $user->setFullName($this->faker->name())
+                ->setPseudo(mt_rand(0, 1) === 1 ? $this->faker->firstName() : null)
+                ->setEmail($this->faker->email())
+                ->setRoles(['ROLE_USER'])
+                ->setPlainPassword('password');
+
+                $users[] = $user;
+                $manager->persist(($user));
+        }
+
+        $usersCount = count($users);
+
+
+
+        // taches
         $now = new \DateTime(); // Date et heure actuelles
         $priorites = ['basse', 'moyenne', 'haute'];
         $statuts = ['En cours', 'Terminé', 'En attente'];
@@ -43,22 +73,8 @@ class AppFixtures extends Fixture
             'Collaborez avec l\'équipe de conception pour finaliser le design de l\'application.',
         ];
 
-         // Users
-         $users = [];
-         for ($i = 0; $i < 10; $i++) {
-            $user = new User();
-            $user->setFullName($this->faker->name())
-                ->setPseudo(mt_rand(0, 1) === 1 ? $this->faker->firstName() : null)
-                ->setEmail($this->faker->email())
-                ->setRoles(['ROLE_USER'])
-                ->setPlainPassword('password');
-
-                $users[] = $user;
-                $manager->persist(($user));
-        }
-
-        $usersCount = count($users);
-        // taches
+         
+        
         $taches = [];
         for ($i = 1; $i <= 30; $i++) {
             $tache = new Tache();

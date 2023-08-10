@@ -60,6 +60,7 @@ class TacheController extends AbstractController
         if (!$this->isGranted('ROLE_USER')) {
             throw new AccessDeniedException('Accès refusé.');
         }
+        
         $tache = new tache();
         $form = $this->createForm(TacheType::class, $tache);
 
