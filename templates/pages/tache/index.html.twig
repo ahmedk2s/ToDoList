@@ -3,15 +3,91 @@
 {% block title %}Taches{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
+    <div class="container mt-3">
     
-        
+        <h2>Mes Taches</h2>
+
         <a href="{{ path('tache.index')}}" class="btn btn-primary mb-3">Créer une tâche</a>
 
 
     {% if not taches.items is same as ([]) %}
 
-        <h1>Mes Taches</h1>
+
+        <div class="row mb-4">
+
+            <div class="col-sm-3 animate__animated animate__slideInDown">
+    <div class="card text-white bg-success mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Tâches Terminées</h5>
+            <p class="card-text">{{ totalTachesTerminees }}</p>
+        </div>
+    </div>
+</div>
+
+            <div class="col-sm-3 animate__animated animate__slideInDown">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Tâches en Cours</h5>
+                        <p class="card-text">{{ totalTachesEnCours }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3 animate__animated animate__slideInDown">
+                <div class="card text-white bg-secondary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Tâches à faire</h5>
+                        <p class="card-text">{{ totalTachesEnAttente }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 animate__animated animate__slideInDown">
+                <div class="card text-white bg-info mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total de Tâches</h5>
+                        <p class="card-text">{{ taches.getTotalItemCount }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            
+   <div class="d-flex justify-content-between mb-4 mb-2 animate__animated animate__slideInDown">
+    <div class="btn-group" role="group">
+        <!-- Menu déroulant de tri -->
+     <div class="dropdown">
+    <div class="btn-group" role="group">
+    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Trier par
+    </button>
+    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+        <a class="dropdown-item" href="{{ path('app_tache', {'sort': 'date_echeance'}) }}">Date</a>
+        <a class="dropdown-item" href="{{ path('app_tache', {'sort': 'priorite'}) }}">Priorité</a>
+    </div>
+</div>
+
+
+</div>
+
+    </div>
+
+    <div class="btn-group" role="group">
+        <!-- Menu déroulant de filtrage -->
+        <div class="dropdown">
+            <button id="btnGroupDrop2" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Filtrer par statut
+            </button>
+            <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
+                <a class="dropdown-item" href="{{ path('app_tache', {'sort': app.request.query.get('sort'), 'statut': 'a faire'}) }}">A faire</a>
+                <a class="dropdown-item" href="{{ path('app_tache', {'sort': app.request.query.get('sort'), 'statut': 'en cours'}) }}">En cours</a>
+                <a class="dropdown-item" href="{{ path('app_tache', {'sort': app.request.query.get('sort'), 'statut': 'terminee'}) }}">Terminée</a>
+                <a class="dropdown-item" href="{{ path('app_tache') }}">Toutes les tâches</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
             {# read and display just one flash message type #}
         {% for message in app.flashes('success') %}
@@ -20,9 +96,6 @@
             </div>
         {% endfor %}
 
-            <h4 class="count mt-3">
-                Tl y a {{ taches.getTotalItemCount }} taches au total
-            </h4>
 
         <table class="table table-hover my-1">
             <thead>
@@ -39,15 +112,32 @@
             </thead>
             <tbody>
                 {% for tache in taches %}
-                <tr class="table-primary">
+                <tr class="table-primarlight">
                     <th scope="row">{{ tache.id }}</th>
                     <td>{{ tache.titre }}</td>
                     <td>{{ tache.description }}</td>
                     <td>{{ tache.dateEcheance|date('Y-m-d') }}</td>
-                    <td>{{ tache.priorite }}</td>
-                    <td>{{ tache.statut }}</td>
+                    <td>{% if tache.priorite == 'Haute' %}
+                                    <span class="badge bg-danger">Haute</span>
+                                {% elseif tache.priorite == 'Moyenne' %}
+                                    <span class="badge bg-warning">Moyenne</span>
+                                {% elseif tache.priorite == 'Basse' %}
+                                    <span class="badge bg-info">Basse</span>
+                                {% endif %}</td>
+                    <td>{% if tache.statut == 'Terminée' %}
+                                    <span class="badge bg-success">Terminée</span>
+                                {% elseif tache.statut == 'En cours' %}
+                                    <span class="badge bg-primary">En cours</span>
+                                {% elseif tache.statut == 'À faire' %}
+                                    <span class="badge bg-secondary">À faire</span>
+                                {% endif %}</td>
+
+                       <td>
+                   <a href="{{ path('tache.show', {'id': tache.id}) }}" class="btn btn-info">Voir</a>
+
+                    </td>           
                     <td>
-                    <a href="{{ path('tache.edit',{ id: tache.id }) }}" class="btn btn-info">Modifier</a>
+                    <a href="{{ path('tache.edit',{ id: tache.id }) }}" class="btn btn-secondary">Modifier</a>
                     </td>
                     <td>
                     
@@ -74,6 +164,12 @@
                 });
             });
         </script>
+<script>
+    $(document).ready(function () {
+        // Initialisation des composants Bootstrap
+        $('.dropdown-toggle').dropdown();
+    });
+</script>
 
 </div>
 {% else %}

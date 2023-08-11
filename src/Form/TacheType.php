@@ -80,10 +80,10 @@ class TacheType extends AbstractType
                 'choices' => [
                     'En cours' => 'En cours',
                     'Terminée' => 'Terminée',
-                    'Reportée' => 'Reportée'
+                    'À faire' => 'À faire'
                 ],
                 'constraints' => [
-                    new Choice(['choices' => ['En cours', 'Terminée', 'Reportée']])
+                    new Choice(['choices' => ['En cours', 'Terminée', 'À faire']])
                 ]
             ])
             ->add('description', TextareaType::class, [

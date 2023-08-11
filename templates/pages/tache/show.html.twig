@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Taches
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5 animate__animated animate__fadeIn">
+    <h1 class="my-4">Taches</h1>
+
+    <div class="card border-primary mb-3 animate__animated animate__fadeIn">
+        <div class="card-body">
+            <table class="table table-hover table-striped table-borderless">
+                <tbody>
+                    <tr class="animate__animated animate__fadeIn">
+                        <th scope="row">Titre</th>
+                        <td>{{ tache.titre }}</td>
+                    </tr>
+                    <tr class="animate__animated animate__fadeIn">
+                        <th scope="row">Description</th>
+                        <td>{{ tache.description }}</td>
+                    </tr>
+                    <tr class="animate__animated animate__fadeIn">
+                        <th scope="row">Date</th>
+                        <td>{{ tache.dateEcheance|date('d-m-Y') }}</td>
+                    </tr>
+                    <tr class="animate__animated animate__fadeIn">
+                        <th scope="row">Priorite</th>
+                        <td>
+                            {% if tache.Priorite == 'Haute' %}
+                                <span class="badge bg-danger animate__animated animate__bounceIn">Haute</span>
+                            {% elseif tache.Priorite == 'Moyenne' %}
+                                <span class="badge bg-warning animate__animated animate__bounceIn">Moyenne</span>
+                            {% elseif tache.Priorite == 'Basse' %}
+                                <span class="badge bg-info animate__animated animate__bounceIn">Basse</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr class="animate__animated animate__fadeIn">
+                        <th scope="row">Statut</th>
+                        <td>
+                            {% if tache.statut == 'Terminée' %}
+                                <span class="badge bg-success animate__animated animate__bounceIn">Terminée</span>
+                            {% elseif tache.statut == 'En cours' %}
+                                <span class="badge bg-primary animate__animated animate__bounceIn">En cours</span>
+                            {% elseif tache.statut == 'À faire' %}
+                                <span class="badge bg-secondary animate__animated animate__bounceIn">À faire</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+             <div class="d-flex justify-content-between animate__animated animate__fadeIn">
+                <div class="d-flex align-items-end mb-3">
+                    <a class="btn btn-outline-secondary animate__animated animate__fadeInLeft" href="{{ path('app_tache') }}">Retour à la liste</a>
+                </div>
+
+               <div class="d-flex flex-column align-items-end">
+    <a href="{{ path('tache.edit',{ id: tache.id }) }}" class="btn btn-info">Modifier</a>
+    <div class="mt-2"> 
+        <a href="{{ path('tache.delete', { id: tache.id }) }}" class="delete-link btn btn-danger" data-confirm="Êtes-vous sûr de vouloir supprimer cette tâche ?">Supprimer</a>
+    </div>
+</div>
+
+            </div> 
+        </div>
+    </div>
+</div>
+<script>
+            const deleteLinks = document.querySelectorAll('.delete-link');
+            
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const confirmationMessage = link.getAttribute('data-confirm');
+                    
+                    if (confirm(confirmationMessage)) {
+                        window.location.href = link.getAttribute('href');
+                    }
+                });
+            });
+        </script>
+{% endblock %}

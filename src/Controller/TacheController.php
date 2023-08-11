@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\VarDumper\VarDumper;
+
 
 class TacheController extends AbstractController
 {
@@ -28,19 +30,72 @@ class TacheController extends AbstractController
     #[Route('/tache', name: 'app_tache', methods: ['GET'])]
     public function index(TacheRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
-        // Vérification de l'autorisation manuellement
-        if (!$this->isGranted('ROLE_USER')) {
-            throw new AccessDeniedException('Accès refusé.');
+        $taches = $repository->findBy([], ['date_echeance' => 'ASC']);;
+
+        $statut = $request->query->get('statut');
+        $sort = $request->query->get('sort');
+        $page = $request->query->getInt('page', 1);
+
+        // Récupérer toutes les tâches de l'utilisateur
+        $toutesTaches = $repository->findBy(['user' => $this->getUser()]);
+
+        // Récupération des tâches depuis le repository avec tri et filtre
+        $queryBuilder = $repository->createQueryBuilder('t')
+            ->where('t.user = :user')
+            ->setParameter('user', $this->getUser());
+
+        if ($statut !== null) {
+            $queryBuilder->andWhere('t.statut = :statut')
+                ->setParameter('statut', $statut);
         }
+
+    
+
+        // Pagination
         $tache = $paginator->paginate(
-            $repository->findBy(['user' => $this->getUser()]),
-            $request->query->getInt('page', 1),
-            7 
+            $queryBuilder->getQuery(),
+            $page,
+            4 // Nombre d'éléments par page
         );
-        return $this->render('pages/tache/index.html.twig', [
-            'taches' => $tache
+
+    // Comptez le nombre de tâches terminées, en attente et en cours
+    $tachesTerminees = array_filter($toutesTaches, function ($tache) {
+        return $tache->getStatut() === 'Terminée';
+    });
+
+    $tachesEnAttente = array_filter($toutesTaches, function ($tache) {
+        return $tache->getStatut() === 'À faire';
+    });
+
+    $tachesEnCours = array_filter($toutesTaches, function ($tache) {
+        return $tache->getStatut() === 'En cours';
+    });
+
+    return $this->render('pages/tache/index.html.twig', [
+        'taches' => $tache,
+        'totalTachesTerminees' => count($tachesTerminees),
+        'totalTachesEnAttente' => count($tachesEnAttente),
+        'totalTachesEnCours' => count($tachesEnCours),
+    ]);
+    
+}
+
+    
+    #[Route('/{id}', name: 'tache.show', methods: ['GET'])]
+    public function show(int $id, TacheRepository $tacheRepository): Response
+    {
+        $tache = $tacheRepository->find($id);
+    
+        if (!$tache) {
+            throw $this->createNotFoundException('Tache introuvable.');
+        }
+    
+        return $this->render('pages/tache/show.html.twig', [
+            'tache' => $tache,
         ]);
     }
+    
+    
 
     /**
      * Undocumented function
@@ -60,7 +115,6 @@ class TacheController extends AbstractController
         if (!$this->isGranted('ROLE_USER')) {
             throw new AccessDeniedException('Accès refusé.');
         }
-        
         $tache = new tache();
         $form = $this->createForm(TacheType::class, $tache);
 
@@ -83,7 +137,6 @@ class TacheController extends AbstractController
             'form' => $form->createView()
         ]);
     }
-
 
     #[Route('/tache/edition/{id}', name: 'tache.edit', methods: ['GET', 'POST'])]
     public function edit(TacheRepository $repository, int $id, Request $request, EntityManagerInterface $manager): Response

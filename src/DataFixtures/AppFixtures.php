@@ -54,8 +54,8 @@ class AppFixtures extends Fixture
 
         // taches
         $now = new \DateTime(); // Date et heure actuelles
-        $priorites = ['basse', 'moyenne', 'haute'];
-        $statuts = ['En cours', 'Terminé', 'En attente'];
+        $priorites = ['Basse', 'Moyenne', 'Haute'];
+        $statuts = ['En cours', 'Terminée', 'À faire'];
         $descriptions = [
             'Préparez une délicieuse tarte aux fruits en mélangeant des fraises juteuses, des framboises sucrées et des bleuets dans un fond de tarte croustillant, le tout garni d\'une délicieuse crème pâtissière légère.',
             'Réorganisez votre espace de travail pour une productivité maximale.',
@@ -76,7 +76,7 @@ class AppFixtures extends Fixture
          
         
         $taches = [];
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 90; $i++) {
             $tache = new Tache();
             $tache->setTitre($this->faker->word())
                 ->setDateEcheance(clone $now->modify('+ ' . mt_rand(1, 14) . ' days')) // Date aléatoire entre 1 et 14 jours à partir de maintenant
